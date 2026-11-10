@@ -1,0 +1,11 @@
+run_id,version,artifact_version,suite,case_id,is_multiturn,case_failure_type,observed_mismatch,expected_tool,actual_tool,passed,routing_correct,args_correct,failures
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G01_merge_duplicate_sources,False,wrong_tool,,merge_sources,merge_sources,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G02_named_account_timeline,False,wrong_arg_value,,timeline,timeline,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G03_news_month_timeframe,False,wrong_arg_value,,lookup,lookup,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G04_missing_article_url,False,missing_info,,clarify,clarify,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G05_publish_needs_confirmation,False,wrong_boundary,,clarify,clarify,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G06_fill_missing_handle,True,missing_info,,timeline,timeline,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G07_switch_social_to_web,True,wrong_tool,,lookup,lookup,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G08_carryover_month,True,wrong_arg_value,wrong_arg_value,lookup,lookup|social_search,False,False,False,"topic: expected 'news', got 'general'; extra tool call social_search"
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G09_correct_handle_and_limit,True,wrong_arg_value,,timeline,timeline,True,True,True,
+v4_B_group_openrouter_20261110T124556018453,v4,v4+p7dc4cb261b78+t823090505338,group,G10_keep_social_change_topic_and_sort,True,wrong_arg_value,,social_search,social_search,True,True,True,

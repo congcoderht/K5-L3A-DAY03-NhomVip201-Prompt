@@ -1,0 +1,1139 @@
+{
+  "run_id": "v3_B_group_openrouter_20261110T122547547805",
+  "version": "v3",
+  "artifact_version": "v3+pb6447676acad+t823090505338",
+  "prompt_hash": "b6447676acadabd9ae989bd5e82c070209496f75b76077210663187ec6c95c92",
+  "tools_hash": "82309050533848459232ff8efa4267dd65d8577ab31d96032ab50b42025c3e58",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\Coding\\Project\\Day03-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\Coding\\Project\\Day03-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-10T12:25:47",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 8,
+    "case_accuracy": 0.8,
+    "tool_routing_accuracy": 0.9,
+    "argument_accuracy": 0.8,
+    "multiturn_accuracy": 0.6,
+    "failure_counts": {
+      "wrong_arg_value": 2
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 2
+    }
+  },
+  "results": [
+    {
+      "id": "G01_merge_duplicate_sources",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Routes cleanup of already available duplicate research items to merge_sources without calling lookup, fetch, or format. Item payload is inspected manually in tool_results because the evaluator's subset matcher is not designed to compare lists of objects."
+      },
+      "input": "Bạn đã có các kết quả nghiên cứu sau. Không tìm kiếm hay đọc URL lại. Hãy hợp nhất chúng, loại trùng theo URL, giữ tối đa 3 mục và ưu tiên đa dạng nguồn: [{\"title\": \"AI update bản ngắn\", \"url\": \"https://www.example.com/ai/?utm_source=newsletter\", \"source\": \"example.com\"}, {\"title\": \"AI update đầy đủ\", \"url\": \"https://example.com/ai\", \"source\": \"example.com\", \"summary\": \"Bản mô tả đầy đủ hơn.\"}, {\"title\": \"Góc nhìn cộng đồng\", \"url\": \"https://social.example/post/1\", \"source\": \"social.example\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "merge_sources",
+            "args": {
+              "dedupe_by": "url",
+              "max_items": 3,
+              "prefer_source_diversity": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "merge_sources",
+            "args": {
+              "items": [
+                {
+                  "title": "AI update bản ngắn",
+                  "url": "https://www.example.com/ai/?utm_source=newsletter",
+                  "source": "example.com"
+                },
+                {
+                  "title": "AI update đầy đủ",
+                  "url": "https://example.com/ai",
+                  "source": "example.com",
+                  "summary": "Bản mô tả đầy đủ hơn."
+                },
+                {
+                  "title": "Góc nhìn cộng đồng",
+                  "url": "https://social.example/post/1",
+                  "source": "social.example"
+                }
+              ],
+              "dedupe_by": "url",
+              "max_items": 3,
+              "prefer_source_diversity": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "merge_sources",
+          "args": {
+            "items": [
+              {
+                "title": "AI update bản ngắn",
+                "url": "https://www.example.com/ai/?utm_source=newsletter",
+                "source": "example.com"
+              },
+              {
+                "title": "AI update đầy đủ",
+                "url": "https://example.com/ai",
+                "source": "example.com",
+                "summary": "Bản mô tả đầy đủ hơn."
+              },
+              {
+                "title": "Góc nhìn cộng đồng",
+                "url": "https://social.example/post/1",
+                "source": "social.example"
+              }
+            ],
+            "dedupe_by": "url",
+            "max_items": 3,
+            "prefer_source_diversity": true
+          },
+          "result": {
+            "tool": "merge_sources",
+            "dedupe_by": "url",
+            "original_count": 3,
+            "returned_count": 2,
+            "duplicates_removed": 1,
+            "invalid_items_skipped": 0,
+            "source_count": 2,
+            "items": [
+              {
+                "title": "AI update đầy đủ",
+                "url": "https://example.com/ai",
+                "source": "example.com",
+                "summary": "Bản mô tả đầy đủ hơn."
+              },
+              {
+                "title": "Góc nhìn cộng đồng",
+                "url": "https://social.example/post/1",
+                "source": "social.example"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_named_account_timeline",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Maps a known person name to the canonical handle and preserves the requested limit."
+      },
+      "input": "Lấy 4 bài mới nhất của Sam Altman",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 4
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                "url": "https://x.com/sama/status/2118471941002842341",
+                "source": "@sama",
+                "date": "Thu Nov 05 22:34:04 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 53,
+                  "views": "47399"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Day 25/",
+                "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                "url": "https://x.com/sama/status/2117797818756952416",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:55:21 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 2703,
+                  "views": "41971"
+                }
+              },
+              {
+                "title": "People should always be in control of the future.",
+                "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                "url": "https://x.com/sama/status/2117794005165748448",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:40:12 +0000 2026",
+                "metrics": {
+                  "favorites": 20658,
+                  "retweets": 1019,
+                  "views": "10643590"
+                }
+              },
+              {
+                "title": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic an",
+                "summary": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity…",
+                "url": "https://x.com/sama/status/2114864981934329996",
+                "source": "@sama",
+                "date": "Mon Oct 26 23:41:18 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1117,
+                  "views": "48208"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_news_month_timeframe",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Routes public news to lookup and maps the Vietnamese monthly timeframe."
+      },
+      "input": "Tin robotics nổi bật trong tháng này",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "robotics",
+            "topic": "news",
+            "timeframe": "month"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "robotics",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "Promise Robotics partners with D.R. Horton on physical AI for homebuilding - The Robot Report",
+                "url": "https://www.therobotreport.com/promise-robotics-partners-d-r-horton-physical-ai-homebuilding",
+                "source": "therobotreport.com",
+                "summary": "Promise Robotics said its technology interprets existing home designs, generates production plans and robotic instructions, orchestrates manufacturing, and connects that production with site installation. Rather than automating isolated tasks, the company said it brings these capabilities together in one integrated environment. [...] Promise Robotics is not a vertically integrated developer or a home designer like Reframe Systems, Attar acknowledged. “We’re more about the advancements in robotics, and we’re here to scale when companies need to scale,” he said. [...] “At D.R. Horton, we are always looking for innovations that can help us improve how we build. We are continuously focused on improving cycle times, increasing production capacity, and bringing greater consistency and predictability to our operations,” said Brad Conlon, senior vice president for strategic growth and innovation at D.R. Horton. “Promise Robotics’ integrated platform gives us a new capability to support those goals.”",
+                "score": 0.5674818
+              },
+              {
+                "title": "Recent advances in AI are creating a 'paradigm shift' for robotics - Berkeley News",
+                "url": "https://news.berkeley.edu/2026/11/09/recent-advances-in-ai-are-creating-a-paradigm-shift-for-robotics",
+                "source": "news.berkeley.edu",
+                "summary": "Traditionally, engineers can directly program the software that tells robots how to perceive objects, plan movements and control their actions, a process called model-based robotics. Or, with model-free robotics, they can train robots to learn behaviors from demonstrations through imitation learning. The first approach requires extensive engineering, while the second needs enormous amounts of data and time. [...] Berkeley-based Ambi Robotics, which specializes in logistics and warehouse order fulfillment, applied the new methods earlier this year to analyze parcel sorting data and test updates to robot behavior. Tests showed an increased capacity of over 15,000 packages sorted annually per robot; the change is now deployed across 30% of the company’s U.S. fleet. [...] Ken Goldberg\n\n“Agentic robotics is a fundamental shift in how robots are controlled,” Goldberg said. “Instead of collecting massive amounts of data and hand-tuning every behavior, teams of agents can quickly generate, test and refine robot programs that allow human engineers to interpret how the programs work for fine-tuning and verification.”",
+                "score": 0.52057004
+              },
+              {
+                "title": "Pitt Athletics and Gecko Robotics Announce Men’s Basketball Jersey Patch Partnership - Pitt Panthers #H2P",
+                "url": "https://pittsburghpanthers.com/news/2026/10/27/general-pitt-athletics-and-gecko-robotics-announce-mens-basketball-jersey-patch-partnership",
+                "source": "pittsburghpanthers.com",
+                "summary": "Gecko Robotics combines advanced robotics and AI-powered software to build, maintain and modernize the world's most critical infrastructure.  \n   \n Using robots that climb, crawl, fly and swim, Gecko is able to collect an unprecedented amount of data on the built world, whether that's with Fortune 100 companies in energy, oil and gas, and manufacturing sectors around the world, or the U.S. Air Force and U.S. Navy to protect and optimize nuclear submarines and aircraft carriers. [...] Founded in 2013 and headquartered in Pittsburgh, Gecko Robotics combines AI and robotics to help build, maintain and modernize critical industries worldwide, including defense, energy, oil and gas and manufacturing. Gecko Robotics brings the city's signature grit to solving some of the world's most complex infrastructure challenges.",
+                "score": 0.4622066
+              },
+              {
+                "title": "Gemini 4 Argon for Robotics - Google Developers Blog",
+                "url": "https://developers.googleblog.com/gemini-4-argon-for-robotics",
+                "source": "developers.googleblog.com",
+                "summary": "robotics that can work alongside humans to solve complex challenges. [...] Plain text\n\nCopied\n\n### 3. One-prompt robotics paper reproductions in MuJoCo WebAssembly\n\nWith a single prompt per paper, Argon reads a robotics control manuscript and any released checkpoints, ports the physics model and closed-loop controller (from 7-network hierarchical locomotion in DeepLoco and 50 Hz PPO actors in HUSKY to Web Worker iLQR in Whole-Body MPC) into self-contained MuJoCo WebAssembly browser labs, and verifies them in headless Chromium.",
+                "score": 0.4478231
+              },
+              {
+                "title": "Gemini Robotics Embodied Reasoning 2 is now available on Google Cloud | Google Cloud Blog",
+                "url": "https://cloud.google.com/blog/products/ai-machine-learning/gemini-robotics-embodied-reasoning-2-is-now-available-on-google-cloud",
+                "source": "cloud.google.com",
+                "summary": "Earlier this year, we introduced Gemini Robotics 2 — our next-generation intelligence layer enabling robots to think, act, and adapt in the physical world. At the core of this breakthrough is Gemini Robotics Embodied Reasoning 2 (ER 2), a specialized Gemini model that serves as a robot’s high-level brain. Working across any robot embodiment — from stationary arms to full humanoids — Gemini Robotics ER 2 combines advanced spatial and temporal video understanding with long-horizon planning and [...] Gemini Robotics ER 2 transforms a robot into a physical agent. The model combines deep spatio-temporal reasoning and long-horizon planning, enabling robots to orchestrate steps to complete a task, self-correct, and generalize to novel situations. To build an agentic setup, developers can declare low-level control interfaces — like Vision-Language-Action (VLA) models or navigation APIs — as tools, and stream multimodal video, audio, or text directly into the model. [...] Today, we are bringing this same frontier embodied reasoning model to enterprise production environments: Gemini Robotics ER 2 is now available in public preview on the Gemini platform. For the first time, organizations can pair Google DeepMind’s latest embodied reasoning model for robotics with the enterprise-grade security, multi-agent orchestration, and end-to-end lifecycle management of Google Cloud — making it easier to simulate, evaluate, and deploy safe, adaptive physical AI at scale.",
+                "score": 0.44521654
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_missing_article_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Asks for a missing URL or paper identifier instead of inventing one or calling a reader tool."
+      },
+      "input": "Đọc và tóm tắt bài nghiên cứu này giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cung cấp URL của bài nghiên cứu mà bạn muốn tóm tắt không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cung cấp URL của bài nghiên cứu mà bạn muốn tóm tắt không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cung cấp URL của bài nghiên cứu mà bạn muốn tóm tắt không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_publish_needs_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Requires explicit yes/no confirmation before any external publishing side effect."
+      },
+      "input": "Đăng nội dung 'AI digest hôm nay' lên Telegram giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có muốn gửi nội dung cụ thể nào không, hay chỉ cần tiêu đề 'AI digest hôm nay'?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có muốn gửi nội dung cụ thể nào không, hay chỉ cần tiêu đề 'AI digest hôm nay'?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có muốn gửi nội dung cụ thể nào không, hay chỉ cần tiêu đề 'AI digest hôm nay'?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_fill_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Fills the previously missing handle while preserving the requested post count and removing @."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt 6 bài đăng mới nhất từ một tài khoản giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Tài khoản là @karpathy"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 6
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 6
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 6
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "karpathy",
+            "items": [
+              {
+                "title": "Earlier this week Tristan published his top YouTube channels:",
+                "summary": "Earlier this week Tristan published his top YouTube channels:\nhttps://t.co/NZ3UCNo6cT\nWhich looked excellent so clearly I had to turn it into TristanTube:\nhttps://t.co/l0KyW1WdNH\n47K super nerdy videos +TV mode for laid back watching. (One-shotted with Claude Code in 3 minutes)",
+                "url": "https://x.com/karpathy/status/2119114537442189652",
+                "source": "@karpathy",
+                "date": "Sat Nov 07 17:07:31 +0000 2026",
+                "metrics": {
+                  "favorites": 9166,
+                  "retweets": 771,
+                  "views": "939327"
+                }
+              },
+              {
+                "title": "Weekend hack: HackerTube. I was annoyed with YouTube's recommendations so I had Claude filter down 43M comments over 20 ",
+                "summary": "Weekend hack: HackerTube. I was annoyed with YouTube's recommendations so I had Claude filter down 43M comments over 20 years of HN to 6,454 videos that keep being recommended. *Significantly* better viewing experience, ~2 hours with Opus 5.5:\nhttps://t.co/JIhXN7OSh1\n\n- Excellent recs without any logins (state is kept in local browser session)\n- Thumbnail is a representative frame from middle of the video instead of the super duper A/B test hyper-optimized user uploads\n- Underlying data from the comment analysis as one zip file, point your Claude at it and ask for your own version\n- HackerTube Longs ✊\n\nA bit more on the process:\nI use Claude Code (desktop app for Mac), Opus 5.5 on Medium effort as my default. I only talk to Claude and have it do everything, the only \"manual work\" I helped with in tandem was in the browser (reminiscent of MenuGen): 1) I had to create some kind of API key from Google Cloud UI to query YouTube for video metadata, 2) I booted up a VPS box for serving and 3) I bought the domain name. Once the box was up I gave Claude the IP and told it update, secure, harden, deploy and optimize the code, and it did the whole thing.\n\nMany awesome projects that would have normally taken weeks/months even can now be few-shotted for breakfast. What else are we not thinking of.",
+                "url": "https://x.com/karpathy/status/2116957135661945283",
+                "source": "@karpathy",
+                "date": "Sun Nov 01 18:14:46 +0000 2026",
+                "metrics": {
+                  "favorites": 52341,
+                  "retweets": 4835,
+                  "views": "5717415"
+                }
+              },
+              {
+                "title": "RT @Tristan0x: If you've ever wondered why smart TVs are so cheap, this is why.",
+                "summary": "RT @Tristan0x: If you've ever wondered why smart TVs are so cheap, this is why.\n\n@log4j rooted his Samsung and found an always-on hot mic,…",
+                "url": "https://x.com/karpathy/status/2114384346815820050",
+                "source": "@karpathy",
+                "date": "Sun Oct 25 15:51:26 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 3287,
+                  "views": "40226"
+                }
+              },
+              {
+                "title": "Dusting off this tweet from April because this gap in shared understanding of LLM capability is *widening*. It's now les",
+                "summary": "Dusting off this tweet from April because this gap in shared understanding of LLM capability is *widening*. It's now less \"two groups of people speaking past each other\" and more a sharp funnel.\n\n- Napkin math somewhere around 6B people (~75% of the population) have barely come in contact with LLMs at all.\n- Around 1-2B (~20%) are casual and infrequent users of free-tier ChatGPT-like products. This group sees derpy chatbots and treats them a bit like a better Google search, a writing aid, or etc. Maybe an agent tries to book you a flight. I have non-tech friends who (reasonably, imo) say they have not much use for it at all. Even many professionals outside of math&code are in this tier. For example, execs and many other functions spend a lot of their time talking to other people, so while they understand what is happening intellectually, it is still second-hand and a bit abstract.\n- Now we get to professional use of frontier-grade LLMs in math&code. Somewhere around 20M people (0.2%) see first-hand that large, complex projects that used to take them weeks/months can now be completed by agents with a prompt. Building apps, copying apps, translating apps, decompiling apps from binaries... This has all happened very quickly and recently - less than 1 year ago, I was writing code manually by hand, typing memorized computer code commands into a code editor character by character, occasionally pressing Tab to autocomplete a little chunk of code.\n- And finally we get to the ~5,000 people (~0.00006%) with access to frontier-grade systems internally. The external world has seen the preview. It looks like swarms of thousands of agents collaborating over weeks on software mega projects: minting zero days, running cyber attacks and defenses at machine speeds, discovering new science, advancing the frontier of mathematics. Things that would have taken top professionals in the industry years of work. Meanwhile, human review and comprehension are starting to fall behind. For example, people are still involved in the \"archeology\" of the OpenAI-HF incident from many months ago. Mathematicians may be poring over the 722 manuscripts on frontier mathematics for a while.\n\nThe funnel is driven by a combination of factors:\n1. The impact scales with ambition, problem size, and horizon. A question with a paragraph answer barely stresses the system. You need a reservoir of big, difficult problems that you really care about. This aspect drives the consumer / professional dimension of the funnel.\n2. The jaggedness of the system (which I have written about a lot separately). Capability peaks in domains that are digital, verifiable and economically valuable. This is because LLM capability emerges from reinforcement learning on verifiable rewards on a curated environment mixture driven by revenue potential. This aspect primarily drives the area (e.g. math&code) dimension of the funnel.\n3. Access. Free-tier, paid-tier, internal.\n\nSo this is the weirdness of the moment. The general public has mostly not interacted with these systems. When they have, it looks like a derpy chatbot. The majority of professionals still see only a modest uplift. And a small sliver of professionals are experiencing the vertigo of the curve going vertical. And it is all happening at the same time.",
+                "url": "https://x.com/karpathy/status/2109361546505966046",
+                "source": "@karpathy",
+                "date": "Sun Oct 11 19:12:37 +0000 2026",
+                "metrics": {
+                  "favorites": 44253,
+                  "retweets": 5926,
+                  "views": "6978925"
+                }
+              },
+              {
+                "title": "Cool eval. Simply ask an LLM “Land or Water?” and give it a latitude and longitude coordinate as text. Ask 16,200 times,",
+                "summary": "Cool eval. Simply ask an LLM “Land or Water?” and give it a latitude and longitude coordinate as text. Ask 16,200 times, plot as image. The models know. From compressing the internet.",
+                "url": "https://x.com/karpathy/status/2105909609487872075",
+                "source": "@karpathy",
+                "date": "Fri Oct 02 06:35:51 +0000 2026",
+                "metrics": {
+                  "favorites": 19511,
+                  "retweets": 1092,
+                  "views": "1605763"
+                }
+              },
+              {
+                "title": "We'll be spending a lot more time trying to understand the outputs of language models. A few thoughts, tips & tricks:",
+                "summary": "We'll be spending a lot more time trying to understand the outputs of language models. A few thoughts, tips & tricks:\n\nWriting. Something I've had success with: Ask your LLM to explain something in ASD-STE100, it's a controlled language specification originally developed for aerospace maintenance documentation. LLMs well-versed in this language and it comes with heavy constraints on clean writing style that I often find a lot more readable. Sometimes I've tried to soften it a bit e.g. ask for \"80% of the way to ASD-STE100\" because the spec is quite stringent. But even better:\n\nDiagrams / images. Instead of writing, ask your LLM to create a diagram. These can be a lot easier to process, parse, and understand. But even better:\n\nWeb pages. Ask for output \"in HTML\" to get a beautiful, interactive webpage. LLMs are getting really good at frontend and can create beautiful experiences, animations, etc. But even better:\n\nExplainer videos. The output format I am most bullish on is fully custom / bespoke explainer videos generated on any arbitrary topic. Experiment with things like \"Create a 3b1b style video explainer on X. Use my ElevenLabs API key for audio narration\". (you'd need an API key for the latter or you can ask your LLM to find you decent free alternatives that use your local compute). This is actually starting to work!\n\nIn summary:\n- As LLMs get better, they will do more and more of the legwork autonomously, and a lot more of our work will rise up the abstractions into oversight and understanding.\n- Luckily, LLMs can help here too because as intelligence and code are increasingly abundant, you can ask for large, custom, discardable software artifacts (e.g. web apps, video explainers) that would have never made sense to create before. Push the boundaries here and you'll be surprised.",
+                "url": "https://x.com/karpathy/status/2105819303471976479",
+                "source": "@karpathy",
+                "date": "Fri Oct 02 00:37:00 +0000 2026",
+                "metrics": {
+                  "favorites": 56673,
+                  "retweets": 6747,
+                  "views": "8187366"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_switch_social_to_web",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Latest source correction overrides the earlier Twitter request while preserving topic and timeframe."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng về robotics trên Twitter"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter, chuyển sang tìm tin tức trên web"
+        },
+        {
+          "role": "user",
+          "content": "Giữ chủ đề robotics và chỉ tìm trong tuần này"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "robotics",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "robotics",
+            "topic": "news",
+            "timeframe": "week",
+            "items": [
+              {
+                "title": "Serve Robotics launches new business to become the AWS for robots | TechCrunch",
+                "url": "https://techcrunch.com/2026/11/05/serve-robotics-launches-new-business-to-become-the-aws-for-robots",
+                "source": "techcrunch.com",
+                "summary": "Serve Robotics, a maker of self-driving sidewalk delivery robots, is expanding beyond its autonomous delivery operations in a bid to become a technology supplier to other companies building robots.\n\nThe company, which spun out of Uber’s acquisition of Postmates in 2021 and went public in 2024, said Thursday it will launch a new business line called Physical AI Services. [...] Specifically, Serve Robotics will offer customers its connectivity and data tools. Bedrock Robotics, a startup developing self-driving systems for construction equipment, is a customer, according to Serve. It’s also working with T-Mobile to bring AI computing power closer to robots, Serve announced alongside its third-quarter earnings on Thursday.\n\n“We are solving the problem of robots in human spaces,” Serve Robotics CEO and co-founder Ai Kashani told TechCrunch. [...] Serve Robotics already makes two kinds of robots, the cute googly-eyed sidewalk delivery robot and one designed for hospitals that it got through its acquisition of Diligent Robotics.\n\nThose businesses are not going away, Kashani emphasized in a recent interview. Instead, he said there is opportunity to sell the technology it developed for its own robots to other companies developing robots for farms, warehouses, and other uncontrolled environments.",
+                "score": 0.63723457
+              },
+              {
+                "title": "Recent advances in AI are creating a 'paradigm shift' for robotics - Berkeley News",
+                "url": "https://news.berkeley.edu/2026/11/09/recent-advances-in-ai-are-creating-a-paradigm-shift-for-robotics",
+                "source": "news.berkeley.edu",
+                "summary": "Traditionally, engineers can directly program the software that tells robots how to perceive objects, plan movements and control their actions, a process called model-based robotics. Or, with model-free robotics, they can train robots to learn behaviors from demonstrations through imitation learning. The first approach requires extensive engineering, while the second needs enormous amounts of data and time. [...] Berkeley-based Ambi Robotics, which specializes in logistics and warehouse order fulfillment, applied the new methods earlier this year to analyze parcel sorting data and test updates to robot behavior. Tests showed an increased capacity of over 15,000 packages sorted annually per robot; the change is now deployed across 30% of the company’s U.S. fleet. [...] Ken Goldberg\n\n“Agentic robotics is a fundamental shift in how robots are controlled,” Goldberg said. “Instead of collecting massive amounts of data and hand-tuning every behavior, teams of agents can quickly generate, test and refine robot programs that allow human engineers to interpret how the programs work for fine-tuning and verification.”",
+                "score": 0.52057004
+              },
+              {
+                "title": "Inside App State’s Robotics Lab: Students explore the future of human–robot collaboration | Appalachian Today",
+                "url": "https://today.appstate.edu/2026/11/04/robotics",
+                "source": "today.appstate.edu",
+                "summary": "The Robotics Lab at Appalachian State University is dedicated to fostering innovative research, hands‑on learning, and interdisciplinary collaboration. Our mission is to develop intelligent robotic systems that improve lives and address real‑world challenges by integrating artificial intelligence, machine learning, and human‑robot interaction.\n\nLearn more\n\nDepartment of Computer Science [...] The Robotics Lab at Appalachian State University is dedicated to fostering innovative research, hands‑on learning, and interdisciplinary collaboration. Our mission is to develop intelligent robotic systems that improve lives and address real‑world challenges by integrating artificial intelligence, machine learning, and human‑robot interaction.\n\nLearn more\n\nDepartment of Computer Science [...] Madadi has developed three courses in the Department of Computer Science to further strengthen robotics education at App State: Introduction to Robotics, Robot Modeling and Control, and Machine Learning in Robotics. These courses provide students with foundational and advanced knowledge in robotic systems, motion modeling, control algorithms and machine learning applications, connecting classroom instruction with hands-on research opportunities in the Robotics Lab.",
+                "score": 0.46526662
+              },
+              {
+                "title": "Agility Robotics begins trading on Nasdaq",
+                "url": "https://www.therobotreport.com/agility-robotics-begins-trading-on-nasdaq",
+                "source": "therobotreport.com",
+                "summary": "“Congratulations to the entire Agility Robotics team on this incredible milestone,” said Nicolaus Radford, co-founder and CEO of humanoid startup Persona AI. “At a time when robotics headlines are too often dominated by hype and flashy demonstrations, Agility has focused on the hard work of putting robots to work. Built on a decade of engineering breakthroughs, relentless persistence and real-world deployments, Jonathan and his team have helped turn the promise of humanoid robotics into a [...] Agility Robotics, which spun out of Oregon State University in 2015, makes the Digit humanoid, which has been moving totes in warehouses. The company claimed that Digit has already logged more than 65,000 hours of operation across nine customer facilities. Customers include AGCO, GXO Logistics, Schaeffler, Mercado Libre, and Toyota Motor Manufacturing Canada. [...] “Today marks an important milestone for Agility, but the bigger story is what it means for the future of work,” stated Peggy Johnson, CEO of Agility Robotics. “AI is moving beyond the digital world and into the physical world, creating new possibilities for how people and machines work together. At Agility, that future is already taking shape.”",
+                "score": 0.4465194
+              },
+              {
+                "title": "Agility Robotics' Nasdaq debut invites scrutiny of humanoid robot market - Ars Technica",
+                "url": "https://arstechnica.com/ai/2026/11/agility-robotics-nasdaq-debut-invites-scrutiny-of-humanoid-robot-market",
+                "source": "arstechnica.com",
+                "summary": "“When we are doing robots as a service, it is much lower risk for customers to use it because they are getting a return on investment on day one,” Jonathan Hurst, co-founder and chief robot officer at Agility Robotics, told Ars. “Because they’re paying a rate that is comparable to the human labor rate, and that makes the economics pretty straightforward.” [...] Humanoid robots remain unproven at scale and have not yet achieved widespread commercialization, compared with industrial robots that have decades of proven track records in warehouses and factories. That frank acknowledgment is among the risks outlined in a securities filing by Agility Robotics—the first dedicated developer of humanoid robots to become a publicly traded company in the United States. [...] The robotics company headquartered in Salem, Oregon, previously became the first to achieve full-time commercial deployment of humanoid robots at a customer warehouse in 2024. Now, Agility’s public listing on the Nasdaq stock exchange as of November 5 has come with financial disclosures detailing how the company plans to build a business around renting out or selling humanoid robots to perform manual labor.",
+                "score": 0.3966996
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_carryover_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Carries the monthly news constraint forward while applying the latest topic correction."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tin AI trong tháng này có gì nổi bật?"
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang chip bán dẫn"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn giữ khoảng thời gian tháng này"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip bán dẫn",
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "tin tức chip bán dẫn",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 5
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "chip bán dẫn",
+              "search_type": "Latest",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "query: expected 'chip bán dẫn', got 'tin tức chip bán dẫn'",
+          "extra tool call social_search"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "tin tức chip bán dẫn",
+            "topic": "news",
+            "timeframe": "month",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "tin tức chip bán dẫn",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "Chip bán dẫn, robot cứu hỏa 'made in' Đại học Quốc gia TP HCM - Báo VnExpress",
+                "url": "https://vnexpress.net/chip-ban-dan-robot-cuu-hoa-made-in-dai-hoc-quoc-gia-tp-hcm-5132219.html",
+                "source": "vnexpress.net",
+                "summary": "VnExpress - Bao tieng Viet nhieu nguoi xem nhat    Thứ bảy, 7/11/2026  \n\nMới nhất \n\nTin theo khu vực \n\n Hà Nội\n TP HCM\n\nInternational\n \n\n Giáo dục\n Tin tức\n\nThứ sáu, 16/10/2026, 05:33 (GMT+7)\n\n# Chip bán dẫn, robot cứu hỏa 'made in' Đại học Quốc gia TP HCM\n\n## Chip bán dẫn, robot cứu hỏa 'made in' Đại học Quốc gia TP HCM\n\nChip trong thiết bị mạng 5G/6G, robot cứu hỏa thuộc nhóm sản phẩm công nghệ chiến lược nổi ḅt do giảng viên Đại học Quốc gia TP HCM nghiên cứu, phát triển. [...] Các loại chip bán dẫn thu hút sự chú ý. Đy là công nghệ lõi trong sản phẩm radar thu phát tín hiệu; thiết bị mạng di động 5G/6G; thiết bị thu phát tín hiệu quang tốc độ cao; bộ điều khiển, phát hiện và khống chế máy bay không người lái (UAV). Quá trình nghiên cứu và công nghệ chi tiết được bảo mật theo cam kết với các đối tác. [...] Các loại chip bán dẫn thu hút sự chú ý. Đy là công nghệ lõi trong sản phẩm radar thu phát tín hiệu; thiết bị mạng di động 5G/6G; thiết bị thu phát tín hiệu quang tốc độ cao; bộ điều khiển, phát hiện và khống chế máy bay không người lái (UAV). Quá trình nghiên cứu và công nghệ chi tiết được bảo mật theo cam kết với các đối tác.",
+                "score": 0.72325134
+              },
+              {
+                "title": "Đại tướng Phan Văn Giang dự Lễ công bố chip bảo mật và nền tảng bán dẫn bảo mật đầu tiên do Việt Nam làm chủ - Tạp chí Quốc phòng toàn dân",
+                "url": "https://tapchiqptd.vn/vi/tin-tuc-thoi-su/dai-tuong-phan-van-giang-du-le-cong-bo-chip-bao-mat-va-nen-tang-ban-dan-bao-mat-dau-tien-d/27102.html",
+                "source": "tapchiqptd.vn",
+                "summary": "TCQPTD\ntcqp\ntcqp\ntcqptd\ntcqptd\ntcqptd\ntcqptd\ntcqptd\ntcqptd\ntcqptd\n\nThứ Tư, 04/11/2026, 17:02 (GMT+7)\n\nNhững chủ trương công tác lớn Tin tức - Thời sự\n\nChiều 03/11, Ban Cơ yếu Chính phủ và Tập đoàn Công nghiệp - Viễn thông Quân đội (Viettel) tổ chức Lễ công bố ra mắt chip bảo mật VGC v1.0 và nền tảng bán dẫn bảo mật đầu tiên do Việt Nam làm chủ thiết kế. Đại tướng Phan Văn Giang, Ủy viên Bộ Chính trị, Phó Thủ tướng Chính phủ, Bộ trưởng Bộ Quốc phòng dự và phát biểu chỉ đạo. [...] Thông tin từ sự kiện cho thấy, để tránh việc chip nhập khẩu có thể làm lộ lọt dữ liệu, muốn vậy phải tạo ra lớp bảo vệ ngay trên phần cứng, tức là đưa trực tiếp thuật toán mật mã quốc gia vào chính con chip. Để đáp ứng yêu cầu này, Ban Cơ yếu Chính phủ và Viettel cùng phát triển nền tảng bán dẫn bảo mật, với chip VGC v1.0 là sản phẩm đầu tiên.\n\n|  |\n\n|  |\n| Đại tướng Phan Văn Giang, Ủy viên Bộ Chính trị, Phó Thủ tướng Chính phủ, Bộ trưởng Bộ Quốc phòng phát biểu tại sự kiện. Ảnh: TUẤN HUY | [...] HOÀNG CHUNG\n\nNguồn: qdnd.vn\n\nĐại tướng Phan Văn Giang,chip bảo mật,nền tảng bán dẫn bảo mật đầu tiên,Việt Nam làm chủ,chip VGC v1.0\n\nChủ tịch Quốc hội Trần Thanh Mẫn hội đàm với Chủ tịch Quốc hội Lào Sonexay Siphandone\n04/11/2026\n\nĐại tướng Phan Văn Giang chủ trì Hội nghị giao ban Bộ Quốc phòng tháng 10/2026\n03/11/2026\n\nBế mạc Hội thi tàu tốt, Hội thao huấn luyện tàu năm 2026\n02/11/2026\n\nADMM+ lần thứ 13: Thúc đẩy đối thoại, củng cố lòng tin\n30/10/2026",
+                "score": 0.60245985
+              },
+              {
+                "title": "Ra mắt chip và nền tảng bán dẫn bảo mật đầu tiên tại Việt Nam",
+                "url": "https://baochinhphu.vn/ra-mat-chip-va-nen-tang-ban-dan-bao-mat-dau-tien-tai-viet-nam-102261103164137087.htm",
+                "source": "baochinhphu.vn",
+                "summary": "Cùng với nhà máy chế tạo chip bán dẫn công nghệ cao tại Hòa Lạc đang được Viettel xy dựng, thỏa thuận hợp tác này là lời khẳng định bước tiến vượt bậc của Việt Nam trong việc tiến tới làm chủ trọn vẹn chuỗi giá trị bán dẫn - thiết kế - sản xuất - đóng gói, góp phần bảo đảm an ninh nguồn cung trước những biến động địa chính trị. [...] Ra mắt chip và nền tảng bán dẫn bảo mật đầu tiên tại Việt Nam - Ảnh 13.\n\n trang chủ\n Chính trị\n Kinh tế\n Văn hóa\n Xã hội\n Khoa giáo\n Quốc tế\n GÓP Ý HIẾN KẾ\n\n© BÁO ĐIỆN TỬ CỦA CHÍNH PHỦ NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\n\nTổng Biên tập: Nguyễn Hồng Sm\n\nGiấy phép số: 102/GP-BTTTT, cấp ngày 15/04/2024.\n\nTrụ sở: 16 Lê Hồng Phong - Ba Đình - Hà Nội;\n\nĐiện thoại: Văn phòng: 080.43162;Fax: 080.48924;\n\nEmail: thongtinchinhphu@chinhphu.vn.\n\nlogo \n\nTải ứng dụng:\n\nBÁO ĐIỆN TỬ CHÍNH PHỦ [...] Đại tướng Phan Văn Giang nhấn mạnh, chip bán dẫn đã trở thành tài nguyên chiến lược, công cụ cạnh tranh quyết liệt giữa các quốc gia. Chip là \"trái tim\" của thiết bị số; mật mã là \"lá chắn\" của thông tin, \"chìa khóa cốt lõi\" để bảo vệ dữ liệu. Không làm chủ được chip thì khó làm chủ trọn vẹn mật mã và không làm chủ được mật mã thì khó bảo vệ chủ quyền số, bảo vệ Tổ quốc một cách vững chắc. Làm chủ nền tảng bán dẫn bảo mật không chỉ là nhiệm vụ khoa học công nghệ mà là nhiệm vụ chính trị, nội",
+                "score": 0.49655825
+              },
+              {
+                "title": "Hợp tác bán dẫn Việt - Nhật mở đường cho đầu tư công nghệ cao",
+                "url": "https://baotintuc.vn/hop-tac-ban-dan-viet-nhat-mo-duong-cho-dau-tu-cong-nghe-cao-post1400924.html",
+                "source": "baotintuc.vn",
+                "summary": "Ở cấp doanh nghiệp, việc FPT bàn giao lô chip thương mại đầu tiên cho khách hàng Nhật Bản thông qua Restar vào cuối năm 2025 cho thấy hợp tác đã có sản phẩm tiếp cận thị trường. Chip quản lý nguồn dành cho máy in đa chức năng phải vượt qua các đánh giá về đặc tính điện, độ ổn định, độ tin cậy và thử nghiệm trên thiết bị thực tế. [...] ## Thúc đẩy hợp tác Việt - Hàn trong lĩnh vực chip bán dẫn và điện tử\n\n## Thúc đẩy hợp tác Việt - Hàn trong lĩnh vực chip bán dẫn và điện tử\n\n## Thúc đẩy hợp tác về bán dẫn và công nghệ y - sinh học với đối tác Hoa Kỳ\n\n### Từ khóa:\n\n#Việt Nam Nhật Bản #công nghệ cao #bán dẫn #đào tạo nhn lực #chip Việt Nam #Nghị quyết 57 #NQ57-bt\n\n### Tin cùng chuyên mục\n\nPhú Thọ đưa khoa học công nghệ, chuyển đổi số thành động lực phát triển [...] Cơ hội không chỉ nằm ở chip tiên tiến nhất. Chip quản lý nguồn, vi điều khiển, cảm biến và chip phục vụ thiết bị công nghiệp có thị trường rõ ràng, phù hợp hơn với khả năng tích lũy công nghệ của doanh nghiệp Việt Nam. Đóng gói tiên tiến, kiểm thử và kiểm định độ tin cậy cũng là những hướng đáng ưu tiên.",
+                "score": 0.45246392
+              },
+              {
+                "title": "Nhà máy chip của FPT tại Bắc Ninh có gì mà ngành bán dẫn Việt Nam kỳ vọng?",
+                "url": "https://vietnamnet.vn/nha-may-chip-cua-fpt-tai-bac-ninh-co-gi-ma-nganh-ban-dan-viet-nam-ky-vong-2570936.html",
+                "source": "vietnamnet.vn",
+                "summary": "### Khởi công nhà máy chip bán dẫn đầu tiên do người Việt làm chủ công nghệ\n ### Giấc mơ ngành công nghiệp bán dẫn vẫn đau đáu với doanh nghiệp Việt\n ### Bộ trưởng Vũ Hải Qun: Intel đã mở đường cho ngành công nghiệp bán dẫn Việt Nam\n\n.svg)\n\n    Sao chép liên kết; \"Sao chép liên kết\")\n\n Xem thêm về:\n ### Bán dẫn Việt Nam\n ### nhà máy chip FPT\n ### FPT Bắc Ninh\n ### nhà máy chip Viettel\n ### công nghiệp bán dẫn\n ### đóng gói chip\n ### sản xuất chip\n ### FPT\n\n## Tin cùng chuyên mục\n\n## Tin mới [...] Nhà máy kiểm thử và đóng gói chip bán dẫn của FPT tại Bắc Ninh chính thức bước vào giai đoạn vận hành thử nghiệm, với 6 dy chuyền và công suất thiết kế tối đa 300 triệu chip mỗi năm.\n\nTrong giai đoạn đầu, nhà máy của FPT tập trung cung cấp dịch vụ kiểm tra chức năng, chất lượng và độ tin cậy cho các doanh nghiệp bán dẫn trong nước và quốc tế. [...] Đặc biệt, các mô hình AI và công nghệ chip AI Edge mở ra cơ hội để Việt Nam tham gia vào những phn khúc có giá trị gia tăng cao trong ngành bán dẫn.\n\nChủ tịch FPT cũng nhắc lại việc doanh nghiệp từng bỏ lỡ cơ hội đầu tư vào lĩnh vực bán dẫn hơn 25 năm trước, dù đã có dịp đến Đài Loan (Trung Quốc) và nhận thấy tiềm năng của ngành công nghiệp này.",
+                "score": 0.43338245
+              }
+            ]
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "chip bán dẫn",
+            "search_type": "Latest",
+            "limit": 5
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "chip bán dẫn",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "Thật không ngờ là có đứa chê Nhật, Đức, Pháp tụt hậu.",
+                "summary": "Thật không ngờ là có đứa chê Nhật, Đức, Pháp tụt hậu.\n\nToàn mấy nước trùm về công nghệ mà tụi nó chê.\n\nNhật thì làm ra robot, Shinkansen, chip bán dẫn.\nĐức thì làm ra xe hơi, máy móc chính xác nhất thế giới.\nPháp thì làm ra máy bay, tên lửa, tàu cao tốc.\n\nVậy mà vẫn có đứa ngồi nhà chê người ta tụt hậu.\n\nKhông hiểu tụi nó lấy tiêu chuẩn gì để chê nữa.",
+                "url": "https://x.com/Mizuki_10299/status/2120025048656601296",
+                "source": "@Mizuki_10299",
+                "date": "Tue Nov 10 05:25:34 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": null
+                }
+              },
+              {
+                "title": "✴️ CHIP AI – DẦU MỎ CỦA THẾ KỶ XXI VÀ QUYỀN LỰC ĐỊNH HÌNH TRẬT TỰ THẾ GIỚI 🌍 ",
+                "summary": "✴️ CHIP AI – DẦU MỎ CỦA THẾ KỶ XXI VÀ QUYỀN LỰC ĐỊNH HÌNH TRẬT TỰ THẾ GIỚI 🌍 \n\nNVIDIA không đơn thuần là một công ty công nghệ. Những bộ xử lý đồ họa và chip tăng tốc AI do hãng phát triển đang trở thành một trong những nền tảng hạ tầng chiến lược của kỷ nguyên trí tuệ nhân tạo.\n\n🟠 Có thể nhìn nhận vị thế của chip AI qua những luận điểm sau:\n\n1. Quyền lực tính toán là một dạng quyền lực kinh tế mới.\n\nTrong thế kỷ XX, dầu mỏ là nguồn năng lượng chiến lược thúc đẩy công nghiệp, giao thông và sản xuất. Trong thế kỷ XXI, năng lực tính toán đang trở thành nguồn lực thiết yếu để huấn luyện mô hình AI, tự động hóa, phân tích dữ liệu và phát triển những công nghệ tiên tiến.\n\n2. Kiểm soát công nghệ lõi tạo ra lợi thế cạnh tranh mang tính hệ thống.\n\nChip AI không chỉ quyết định tốc độ xử lý dữ liệu, mà còn ảnh hưởng đến chi phí nghiên cứu, năng suất lao động, khả năng đổi mới sáng tạo và năng lực cạnh tranh của doanh nghiệp cũng như quốc gia.\n\n3. AI đang mở rộng quyền lực từ kinh tế sang quốc phòng và an ninh.\n\nTừ hệ thống tình báo, mô phỏng chiến trường, thiết bị tự hành, nhận diện mục tiêu đến an ninh mạng, AI đang làm thay đổi phương thức vận hành của nhiều lĩnh vực chiến lược. Vì vậy, năng lực sản xuất và tiếp cận chip tiên tiến không còn đơn thuần là câu chuyện thương mại.\n\n4. Quyền lực bán dẫn không nằm ở một con chip đơn lẻ.\n\nĐằng sau một bộ xử lý AI là cả hệ sinh thái phức tạp: thiết kế vi mạch, công nghệ chế tạo, máy móc bán dẫn, vật liệu, bộ nhớ băng thông cao, đóng gói tiên tiến, phần mềm và năng lượng. Chỉ một mắt xích bị gián đoạn cũng có thể tác động đến toàn bộ chuỗi cung ứng.\n\n5. Công nghệ chip đang trở thành công cụ chiến lược trong quan hệ quốc tế.\n\nNhững biện pháp kiểm soát xuất khẩu chip AI tiên tiến cho thấy công nghệ bán dẫn đã vượt khỏi phạm vi cạnh tranh thương mại thông thường, gắn chặt với an ninh quốc gia, lợi ích chiến lược và vị thế trong trật tự công nghệ toàn cầu.\n\n6. Lợi thế hôm nay không đồng nghĩa với quyền lực tuyệt đối ngày mai.\n\nLịch sử công nghệ cho thấy vị thế dẫn đầu luôn có thể thay đổi. Lợi thế bền vững không chỉ đến từ việc sở hữu một sản phẩm vượt trội, mà còn từ khả năng làm chủ hệ sinh thái, nhân lực, nghiên cứu, chuỗi cung ứng và năng lực đổi mới liên tục.\n\nNếu dầu mỏ từng quyết định sức mạnh công nghiệp của một quốc gia, thì năng lực tính toán có thể trở thành một trong những yếu tố quyết định vị thế của quốc gia đó trong kỷ nguyên AI.\n\nCuộc cạnh tranh thực sự không chỉ nằm ở việc ai sở hữu nhiều chip hơn, mà là ai làm chủ được toàn bộ hệ sinh thái công nghệ phía sau chúng.\n\nBởi trong thế kỷ XXI, người tạo ra năng lực tính toán không chỉ tham gia vào nền kinh tế tương lai; họ còn góp phần định hình những luật chơi của tương lai.",
+                "url": "https://x.com/alldexone/status/2120000517288144972",
+                "source": "@alldexone",
+                "date": "Tue Nov 10 03:48:05 +0000 2026",
+                "metrics": {
+                  "favorites": 21,
+                  "retweets": 11,
+                  "views": "203"
+                }
+              },
+              {
+                "title": "半导体大涨，为什么你的股票没涨？｜半導体株が急反発、それでも持ち株が上がらないのは？｜반도체 급반등, 내 종목은 왜 안 오를까?｜Cổ phiếu bán dẫn bật tăng, sao mã của bạn vẫn đứng yê",
+                "summary": "半导体大涨，为什么你的股票没涨？｜半導体株が急反発、それでも持ち株が上がらないのは？｜반도체 급반등, 내 종목은 왜 안 오를까?｜Cổ phiếu bán dẫn bật tăng, sao mã của bạn vẫn đứng yên?｜Chips Rally. Why Is Your Stock Still Lagging?\n\n🇨🇳 中国\n\n美股11月9日收盘，费城半导体指数上涨6.9%，英伟达却下跌4.2%。\n\n“半导体涨了”，越来越不能代替具体分析。\n\n① 设备：看晶圆厂是否真的扩产，不能直接照搬美股芯片设计公司的逻辑。\n② 封测：先进封装与传统封测，订单、产能和利润率可能完全不同。\n③ 存储：涨价能否变成利润，还要看库存成本、产品结构和客户议价。\n你买的是半导体行业，还是其中一门具体生意？\n\n🇯🇵 日本\n米半導体株が反発しても、日本の関連株が一斉に上がるとは限らない。\n\n① 製造装置：顧客の設備投資計画と受注を確認。\n② 検査装置：どのチップを、どれだけ複雑に検査するかが需要を左右する。\n③ 材料：販売数量が増えても、価格や製品構成次第で利益は変わる。\nあなたの持ち株は、半導体の何が増えると儲かりますか？\n\n🇰🇷 한국\n미국 반도체 지수가 올랐다고 한국 메모리 기업의 이익 전망까지 자동으로 좋아지는 것은 아니다.\n① 메모리: 가격·출하량·제품 구성을 함께 봐야 한다.\n② 장비: 고객의 투자 발표가 실제 발주로 이어지는지 확인해야 한다.\n③ 주가: 좋은 실적도 이미 가격에 반영됐다면 상승 여력은 제한될 수 있다.\n\n내 종목을 움직이는 것은 메모리 가격인가요, 수주인가요, 기대감인가요?\n\n🇻🇳 Việt Nam\n\nCổ phiếu chip Mỹ tăng không có nghĩa mọi doanh nghiệp gắn với bán dẫn đều hưởng lợi như nhau.\n① Khu công nghiệp: cần dự án thuê đất thực tế, không chỉ kỳ vọng đón nhà máy.\n② Công nghệ: doanh thu thiết kế, phần mềm và lắp ráp là những mô hình khác nhau.\n③ Định giá: câu chuyện tăng trưởng hấp dẫn vẫn cần mức giá mua hợp lý.\nDoanh nghiệp bạn chọn đã có doanh thu từ bán dẫn, hay mới có kế hoạch?\n\n🇺🇸 United States\n\nOn Nov. 9, the semiconductor index jumped 6.9%. Nvidia fell 4.2%.\n“Bullish on chips” is no longer a complete investment thesis.\n① Designers: product competitiveness, customer spending and company-specific risks matter.\n② Equipment makers: customers announcing capex isn’t the same as placing orders.\n③ Memory makers: pricing, capacity and product mix drive a different earnings cycle.\nWhat exactly are you buying: AI demand, factory spending—or memory pricing?\n\n以上为情景分析，不构成投资建议。｜シナリオ分析であり、投資助言ではありません。｜시나리오 분석이며 투자 조언이 아닙니다.｜Phân tích kịch bản, không phải khuyến nghị đầu tư.｜Scenario analysis, not investment advice.",
+                "url": "https://x.com/FrankIndie/status/2119984223398547790",
+                "source": "@FrankIndie",
+                "date": "Tue Nov 10 02:43:20 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "65"
+                }
+              },
+              {
+                "title": "🚨 CHỨNG KHOÁN NHẬT BẢN VÀ HÀN QUỐC BẬT TĂNG MẠNH, SÀN HÀN QUỐC KÍCH HOẠT CƠ CHẾ HẠN CHẾ LỆNH MUA!",
+                "summary": "🚨 CHỨNG KHOÁN NHẬT BẢN VÀ HÀN QUỐC BẬT TĂNG MẠNH, SÀN HÀN QUỐC KÍCH HOẠT CƠ CHẾ HẠN CHẾ LỆNH MUA!\n\n🇰🇷 Thị trường chứng khoán Hàn Quốc tăng mạnh trong phiên 10/11.\n\nTại thời điểm ghi nhận, cổ phiếu SK Hynix tăng 5,99%, trong khi Samsung Electronics tăng 4,11%.\n\nĐáng chú ý, Sở Giao dịch Chứng khoán Hàn Quốc đã kích hoạt cơ chế buy-side sidecar trên cả hai thị trường KOSPI và KOSDAQ, tạm dừng các lệnh mua tự động theo chương trình trong 5 phút nhằm kiểm soát biến động. Hoạt động giao dịch cổ phiếu thông thường vẫn diễn ra bình thường.\n\n🇯🇵 Nhóm cổ phiếu công nghệ và bán dẫn Nhật Bản cũng đồng loạt bứt phá.\n\nSoftBank Group tăng mạnh 11,44%.\nTokyo Electron tăng 5,84%.\nKeyence tăng 5,83%.\n\nTuy nhiên, đà tăng không lan tỏa đến toàn bộ thị trường. Toyota giảm 1,32%, trong khi Sony giảm nhẹ 0,02%.\n\n📈 Điều gì đang thúc đẩy chứng khoán châu Á phục hồi?\n\nĐộng lực chính đến từ sự hồi phục của nhóm cổ phiếu công nghệ Mỹ trong phiên giao dịch trước đó, kết hợp với đà giảm của giá dầu.\n\nĐặc biệt, chỉ số bán dẫn Philadelphia (SOX) tăng khoảng 6,85%, góp phần thúc đẩy tâm lý tích cực đối với nhóm cổ phiếu chip tại Nhật Bản và Hàn Quốc.\n\n💡 Điểm đáng chú ý: Đà tăng mạnh đến mức kích hoạt cơ chế hạn chế lệnh mua tự động tại Hàn Quốc cho thấy dòng tiền đang đổ vào thị trường với tốc độ rất nhanh. Tuy nhiên, diễn biến trái chiều giữa các nhóm cổ phiếu cũng cho thấy sự phục hồi vẫn mang tính chọn lọc, tập trung chủ yếu vào công nghệ và bán dẫn.\n\n#AsiaMarkets #KOSPI #Nikkei225 #StockMarket #Semiconductor #ONCOIN",
+                "url": "https://x.com/oncoin_vietnam/status/2119979078795370616",
+                "source": "@oncoin_vietnam",
+                "date": "Tue Nov 10 02:22:54 +0000 2026",
+                "metrics": {
+                  "favorites": 3,
+                  "retweets": 2,
+                  "views": "97"
+                }
+              },
+              {
+                "title": "TCnews 10/11 | Wall Street Đảo Chiều Bứt Tốc, Dầu Thô Lao Dốc",
+                "summary": "TCnews 10/11 | Wall Street Đảo Chiều Bứt Tốc, Dầu Thô Lao Dốc\nĐiểm tin nhanh phiên đầu tuần: Thị trường tài chính toàn cầu vừa trải qua một ngày giao dịch tương đối hứng khởi khi dòng tiền quay trở lại các kênh tài sản rủi ro, trong khi giá năng lượng và đồng bạc xanh đồng loạt giảm nhiệt.\n\nDưới đây là 5 diễn biến lớn đáng chú ý:\n\nChứng khoán Mỹ hồi phục trên diện rộng: Sau đợt bán tháo quanh kỳ bầu cử giữa kỳ, Phố Wall bật tăng trở lại với sắc xanh bao phủ toàn bộ 11 nhóm ngành. Nasdaq dẫn đầu đà tăng (+3,4%), S&P 500 tăng 2,35% và Dow Jones cộng hơn 2,1%. Đáng chú ý, nhịp hồi phục này diễn ra ngay cả khi cổ phiếu Nvidia rớt 5% do lùm xùm điều tra nội bộ liên quan đến CEO Jensen Huang, trong bối cảnh Alphabet vừa tung ra hệ thống chip TPU mới để cạnh tranh trực diện.\n\nDầu thô và USD cùng hạ nhiệt nhờ tín hiệu ngoại giao: Giá dầu thế giới quay đầu giảm mạnh do xuất hiện các chuyển động hòa hoãn ở Trung Đông. Đề xuất trung gian từ Qatar và Pakistan đã mở lại kênh đối thoại giữa Washington và Tehran xung quanh mức làm giàu uranium 3,67% và sự trở lại của các thanh sát viên IAEA. Tâm lý bớt căng thẳng khiến dòng tiền bớt tìm đến nơi trú ẩn an toàn, kéo chỉ số USD suy yếu và đẩy đồng EUR lấy lại mốc 1,12.\n\nChính sách Fed và thuế quan tạm thời dễ thở: Về phía thương mại, USTR vừa gia hạn toàn bộ 178 danh mục miễn trừ thuế chuyển giao công nghệ với Trung Quốc, đồng thời hoãn các biện pháp trừng phạt ngành đóng tàu đến đầu năm 2027. Tuy nhiên, về mặt lãi suất, các quan chức Fed như Thomas Barkin và Austan Goolsbee vẫn tỏ ra khá thận trọng; họ cảnh báo lạm phát mảng dịch vụ và áp lực chi phí doanh nghiệp vẫn dai dẳng, khiến khả năng hạ thêm lãi suất trong cuộc họp tháng 12 tới chưa có gì là chắc chắn.\n\nSắc xanh lan tỏa sang Châu Á và Châu Âu: Thị trường Châu Á khởi sắc với việc chỉ số Nikkei 225 tăng hơn 3% và vượt ngưỡng 59.000 điểm. Chứng khoán Đài Loan cũng dẫn dắt khu vực sau khi cơ quan quản lý áp lệnh hạn chế bán khống và sẵn sàng kích hoạt quỹ bình ổn 500 tỷ TWD. Tại Châu Âu, các sàn giao dịch lớn đồng loạt đóng cửa trong sắc xanh; Thống đốc Ngân hàng Trung ương Anh (BoE) Andrew Bailey ghi nhận các dấu hiệu tích cực từ cú hích năng suất do AI mang lại. Ngoài ra, Nhật Bản và Việt Nam cũng vừa đạt thỏa thuận đẩy mạnh hợp tác khai thác khoáng sản thiết yếu và dự án LNG.\n\nKỳ vọng vào các cuộc hòa đàm ở Abu Dhabi: Tâm điểm chính trị quốc tế đang dồn về Abu Dhabi, nơi diễn ra các cuộc trao đổi đa phương nhằm tìm kiếm lối thoát cho cuộc xung đột Nga - Ukraine. Dù phía EU vẫn còn nhiều hoài nghi về thiện chí của Moscow, các quan chức Mỹ bày tỏ kỳ vọng cuộc gặp lần này có thể mang lại tiến triển thực chất về cấu trúc an ninh dài hạn cho Châu Âu.\n\n#Noinguyen #Thitruong #Chungkhoan #Cophieu #Giadau",
+                "url": "https://x.com/NoiNguyen1101/status/2119966883336364253",
+                "source": "@NoiNguyen1101",
+                "date": "Tue Nov 10 01:34:26 +0000 2026",
+                "metrics": {
+                  "favorites": 1,
+                  "retweets": 0,
+                  "views": "103"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_correct_handle_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Applies the latest handle and limit corrections instead of retaining earlier values."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy 10 tweet mới nhất của Elon Musk"
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang Sam Altman"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 3 bài"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "elonmusk",
+              "limit": 3
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "screenname: expected 'sama', got 'elonmusk'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "elonmusk",
+            "limit": 3
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "elonmusk",
+            "items": [
+              {
+                "title": "RT @MegynKellyShow: .@MegynKelly on the absolute double standard in the Russell Brand sentencing: “If you needed any fur",
+                "summary": "RT @MegynKellyShow: .@MegynKelly on the absolute double standard in the Russell Brand sentencing: “If you needed any further proof that thi…",
+                "url": "https://x.com/elonmusk/status/2119996001490768028",
+                "source": "@elonmusk",
+                "date": "Tue Nov 10 03:30:09 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1036,
+                  "views": "442492"
+                }
+              },
+              {
+                "title": "RT @firesidealpha: JUST IN: Memphis Mayor reveals SpaceX data center taxes more than doubled to $54 million, after $25 m",
+                "summary": "RT @firesidealpha: JUST IN: Memphis Mayor reveals SpaceX data center taxes more than doubled to $54 million, after $25 million last year ma…",
+                "url": "https://x.com/elonmusk/status/2119993726898774521",
+                "source": "@elonmusk",
+                "date": "Tue Nov 10 03:21:06 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 306,
+                  "views": "398072"
+                }
+              },
+              {
+                "title": "RT @ricwe123: The Germans are learning what mass immigration really means.",
+                "summary": "RT @ricwe123: The Germans are learning what mass immigration really means.\n\n\"Wir schaffen das\" https://t.co/pEQc1OMbao",
+                "url": "https://x.com/elonmusk/status/2119992481156829218",
+                "source": "@elonmusk",
+                "date": "Tue Nov 10 03:16:09 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1423,
+                  "views": "380946"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_keep_social_change_topic_and_sort",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Keeps the social source category while applying the latest topic and sorting corrections."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tweet mới nhất về OpenAI"
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang Anthropic"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn tìm trên Twitter, nhưng lấy các bài top thay vì latest"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "Anthropic",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "Anthropic",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "Anthropic",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "Anthropic",
+            "search_type": "Top",
+            "items": [
+              {
+                "title": "This is f*cking insane. Former Google CEO Eric Schmidt just told everyone the easiest way to get rich in the next two ye",
+                "summary": "This is f*cking insane. Former Google CEO Eric Schmidt just told everyone the easiest way to get rich in the next two years, and it's not stocks or crypto:\n\n\"If you really want to make money, it's actually easy, found an agentic AI company, I mean build an agent to do something\n\nIf you build a better agent than anyone else, you can probably build one incredible company and own it yourself\"\n\nThe man who ran Google for 10 years explains in under 30 seconds why the next year or two is the agentic period, and why the window won't stay open\n\nPrompts → Claude Code → Loops → Graphs → Gates → A Company You Own Yourself\n\nSave this before it disappears from your feed\n\nEverything below is free:\n\nBuilding effective agents (Anthropic)\nhttps://t.co/mbMyiLIrqx\n\nHow Anthropic built its multi-agent research system\nhttps://t.co/gcKwsDFx5N\n\nHarnesses for long-running agents\nhttps://t.co/p0KbeE6pBF\n\nWriting tools for agents\nhttps://t.co/Rif9SuExCh\n\nClaude Code 101\nhttps://t.co/rma5cTfV6M\n\nClaude Code in action\nhttps://t.co/y7ldRiCZRC\n\nPrompt engineering\nhttps://t.co/wGkkT9tlAO\n\nSubagents (parallel work)\nhttps://t.co/Govs5sjHB0\n\nHooks (checks that can say no)\nhttps://t.co/YigRzFmXr3\n\nCLAUDE.md + memory\nhttps://t.co/EzV1u4QdQd\n\nSkills\nhttps://t.co/c8RGkxgGCt\n\nMCP\nhttps://t.co/tR6oTaM1QK\n\nLangGraph (graphs of agents)\nhttps://t.co/iKq99402hN\n\nKarpathy's autoresearch (an agent in a loop)\nhttps://t.co/gEMaSZMoYc\n\nAll of this costs $0\n\n95% will spend the agentic period scrolling AI threads. The 5% who ship agents will own the companies that come out of it\n\nBookmark it and start with the first link tonight\n\nThen read how to make an agent that works for hours without you in the Loops & Graphs guide below ↓",
+                "url": "https://x.com/HoodieFade_/status/2119824593753956844",
+                "source": "@HoodieFade_",
+                "date": "Mon Nov 09 16:09:02 +0000 2026",
+                "metrics": {
+                  "favorites": 3434,
+                  "retweets": 680,
+                  "views": "695351"
+                }
+              },
+              {
+                "title": "This is f*cking wild. Someone asked Anthropic CEO Dario Amodei what a kid finishing high school should do right now. He ",
+                "summary": "This is f*cking wild. Someone asked Anthropic CEO Dario Amodei what a kid finishing high school should do right now. He didn't sugarcoat it:\n\n\"AI can do entry-level law work. It can do entry-level finance. It can do entry-level consulting.\n\nAI will also eliminate jobs, and probably a large number of them\"\n\nIn 42 seconds, he lists the first careers in the line of fire: junior law, junior finance, junior consulting\n\nHe's already put a number on it: half of entry-level white-collar jobs disrupted within 1 to 5 years\n\nEvery shift before this one, from farms to factories to the internet, gave people time to catch up. This one, he says, cuts deeper and moves faster\n\nChatting → Prompting → Agents → Harness → Loops → You Run the AI\n\nHis advice is simple: learn to use AI. But using it is now the bare minimum. What sets you apart is a harness that runs it for you\n\nBookmark this before your feed buries it\n\nEvery repo below costs nothing:\n\nReady-made Claude plugins for legal, finance, sales, HR and data\nhttps://t.co/gFtvfhaac1\n\nAnalyst-grade agents: models, memos, research notes\nhttps://t.co/wri7FBqpO2\n\nSkills for Excel, Word, PowerPoint and PDF\nhttps://t.co/B2f47jP89r\n\nAn agent that does financial research on its own\nhttps://t.co/VJCDSYYJcn\n\nAn agent that researches any topic in depth\nhttps://t.co/8VZAJKBkV3\n\nAsk your spreadsheets and databases questions in plain English\nhttps://t.co/p2DBwVnrxZ\n\nAgents that work as a team, each with its own role\nhttps://t.co/KezyAtsPsD\n\nA harness with everything built in\nhttps://t.co/H3Y67E5tp4\n\nAnthropic's SDK for building your own agents\nhttps://t.co/JidFNfxArL\n\nA memory layer so your agents remember context\nhttps://t.co/fZpN3tpAiH\n\nA loop that keeps the agent going until the job is done\nhttps://t.co/F7yhkt0eQS\n\nAn agent that clicks through websites and fills forms for you\nhttps://t.co/C68xvrnAfc\n\nAutomate busywork with drag-and-drop workflows\nhttps://t.co/sD9Xqbb2rN\n\n18 free lessons on building agents\nhttps://t.co/MgWhM08TL4\n\nTotal cost: $0\n\nIt won't be AI that takes your seat. It'll be someone who built a harness\n\n95% will keep sending résumés for work AI already does, the 5% with a harness will be the ones managing it\n\nSave it and forward it to anyone starting their first job\n\nThen follow the guide below and build your harness while everyone else is still waiting ↓",
+                "url": "https://x.com/0xSanabi/status/2119106909919674598",
+                "source": "@0xSanabi",
+                "date": "Sat Nov 07 16:37:13 +0000 2026",
+                "metrics": {
+                  "favorites": 9863,
+                  "retweets": 1603,
+                  "views": "4366115"
+                }
+              },
+              {
+                "title": "this is f*cking insane... Boris Cherny's team at Anthropic just shared 94 Claude plugins and skills for free. ALL OF THE",
+                "summary": "this is f*cking insane... Boris Cherny's team at Anthropic just shared 94 Claude plugins and skills for free. ALL OF THEM\n\none answers your emails. one chases clients who didn't pay. one finds the trap in your contract. one fixes your code while you sleep\n\n55 plugins for Claude Code\n20 plugins for real jobs: sales, legal, finance, marketing\n19 skills: Excel, PowerPoint, PDF, Word and more\n\n269,000 GitHub stars between them. agencies charge $300-1,500 to build just one of these. here all 94 cost $0\n\nhow to grab one:\n\n1. open Claude Code and type /plugin\n2. pick the one for the job you hate most\n3. hit install\n4. give it the first task in chat\n\nplugins: https://t.co/Rx8gGKjui4\nwork plugins: https://t.co/KQWmMlhXuy\nskills: https://t.co/Xv9APhlSU2\n\nstart small: one plugin today for the task you repeat every week\n\nplugins are the start. how to build your own AI agents is in the article below ↓",
+                "url": "https://x.com/mika_systems/status/2119152475949441028",
+                "source": "@mika_systems",
+                "date": "Sat Nov 07 19:38:16 +0000 2026",
+                "metrics": {
+                  "favorites": 760,
+                  "retweets": 89,
+                  "views": "54150"
+                }
+              },
+              {
+                "title": "One of my friends makes $1.2M a year as an Anthropic engineer.",
+                "summary": "One of my friends makes $1.2M a year as an Anthropic engineer.\n\nI asked him how he became so good at prompting. He sent me a video that was never meant to be public: Anthropic’s core team prompting playbook.\n\nYou’ll struggle to find a better 30-minute guide to prompting than this.\n\nI watched it last night. Halfway through, I realized I’d been using Claude completely wrong for the past two years.\n\nWatch it. Bookmark it.",
+                "url": "https://x.com/Grow_withAI/status/2119596273162703306",
+                "source": "@Grow_withAI",
+                "date": "Mon Nov 09 01:01:46 +0000 2026",
+                "metrics": {
+                  "favorites": 2666,
+                  "retweets": 411,
+                  "views": "397422"
+                }
+              },
+              {
+                "title": "It's f*cking wild: Google, Cloudflare, Obsidian's CEO and the guy building Claude Code all put their AI configs on GitHu",
+                "summary": "It's f*cking wild: Google, Cloudflare, Obsidian's CEO and the guy building Claude Code all put their AI configs on GitHub for free, and most people are still starting from zero\n\n1. Matt Pocock's skills · 318K stars\n18M+ installs. the exact folder of AI instructions he uses every day: tests first, clear specs, real reviews\nhttps://t.co/AmtWH9JDco\n\n2. Addy Osmani's skills · 92K stars\nengineering skills from the guy working on Claude Code at Anthropic\nhttps://t.co/1f2tlQ4NO0\n\n3. Cloudflare's audit · 63.9K stars\nthe starting point of what now scans 128 of Cloudflare's own repos. one team of agents hunts for bugs, another tries to prove them wrong\nhttps://t.co/qCsWTtnkUq\n\n4. Obsidian CEO's skills · 51K stars\nteaches any AI to write real Obsidian notes instead of messy text\nhttps://t.co/SG7k1XpYrK\n\n5. Google's goldfish · 14.8K stars\n2 weeks old. the plugin Google's own engineers use to catch AI coding mistakes. the agent writes a design doc, then fresh AI sessions that never saw it try to tear it apart\nhttps://t.co/mJQYjqMlFb\n\nthe biggest teams in tech already stopped writing prompts from zero. their configs are one click away\n\nsave it and steal one tonight",
+                "url": "https://x.com/danikkk_wqs/status/2119535297541070962",
+                "source": "@danikkk_wqs",
+                "date": "Sun Nov 08 20:59:28 +0000 2026",
+                "metrics": {
+                  "favorites": 3412,
+                  "retweets": 319,
+                  "views": "363049"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
