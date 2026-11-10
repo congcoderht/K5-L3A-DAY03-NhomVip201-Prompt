@@ -1,7 +1,0 @@
-id,error_type,observed_mismatch,failures,expected,expected_tool_calls,actual_tool_calls
-R08_out_of_scope,out_of_scope,unexpected_tool_call,"expected no tool call",no tool call,,send
-R10_missing_handle,missing_info,missing_tool_call,"missing tool call clarify; extra tool call timeline",,"clarify",timeline
-R11_missing_url,missing_info,missing_tool_call,"missing tool call clarify; extra tool call fetch",,"clarify",fetch
-R12_confirm_before_send,wrong_boundary,missing_tool_call,"missing tool call clarify; extra tool call send",,"clarify",send
-R13_parallel_web_and_tweets,wrong_tool,wrong_arg_value,"query: expected 'AI', got 'AI news'; topic: expected 'news', got None",,"lookup; social_search","lookup; social_search"
-R14_out_of_scope_coding,out_of_scope,unexpected_tool_call,"expected no tool call",no tool call,,send
