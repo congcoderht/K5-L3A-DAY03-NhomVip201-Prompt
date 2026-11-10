@@ -88,14 +88,17 @@ tools:
       required: [url]
 
   - name: format
-    description: "Trình bày dữ liệu đã có thành văn bản."
+    description: >-
+      Trình bày dữ liệu kết quả đã có thành văn bản định dạng theo khuôn mẫu.
+      Dùng sau khi đã thu thập hoặc merge kết quả để tạo bản tin, tóm tắt,
+      bản tin bullets hoặc thread. Không dùng để tìm kiếm thông tin hay lấy dữ liệu từ bên ngoài.
     parameters:
       type: object
       properties:
         items:
           type: array
           default: []
-          description: "Danh sách item"
+          description: "Danh sách item cần format."
           items:
             type: object
             properties:
@@ -104,12 +107,15 @@ tools:
               source: {type: string}
               summary: {type: string}
               section: {type: string}
-        template: {type: string, enum: [brief, sections, bullets, thread, daily_ai_vn], default: "sections", description: "Khuôn"}
-        headline: {type: string, default: "", description: "Tiêu đề"}
+        template: {type: string, enum: [brief, sections, bullets, thread, daily_ai_vn], default: "sections", description: "Khuôn mẫu format."}
+        headline: {type: string, default: "", description: "Tiêu đề của bản tin hoặc tài liệu."}
       required: [items, template]
 
   - name: merge_sources
-    description: "Hợp nhất, chuẩn hóa và loại kết quả trùng từ các research tool sau khi dữ liệu đã được lấy. Dùng trước format khi có nhiều nguồn hoặc URL trùng; không dùng để tìm kiếm, đọc URL, fact-check, tóm tắt hoặc trình bày digest."
+    description: >-
+      Hợp nhất, chuẩn hóa và loại kết quả trùng từ các research tool sau khi dữ liệu đã được lấy.
+      Dùng trước format khi có nhiều nguồn hoặc URL trùng.
+      Không dùng để tìm kiếm, đọc URL, fact-check, tóm tắt hoặc trực tiếp trình bày digest.
     parameters:
       type: object
       properties:
@@ -157,31 +163,40 @@ tools:
       required: [text]
 
   - name: policy
-    description: "Tìm trong tài liệu nội bộ."
+    description: >-
+      Tìm kiếm quy định và chính sách nội bộ của tổ chức.
+      Dùng khi request liên quan đến nội quy, chính sách xuất bản, trích dẫn, quyền riêng tư dữ liệu hoặc hướng dẫn sử dụng công cụ nội bộ.
+      Không dùng cho tin tức bên ngoài, nghiên cứu học thuật hoặc tìm kiếm web công khai.
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Nhóm"}
-        top_k: {type: integer, default: 3, description: "Số mục"}
+        query: {type: string, default: "", description: "Truy vấn tìm kiếm trong văn bản chính sách."}
+        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Lĩnh vực chính sách cần tra cứu."}
+        top_k: {type: integer, default: 3, description: "Số điều khoản hoặc đoạn chính sách cần lấy."}
       required: [query]
 
   - name: papers
-    description: "Tìm bài báo khoa học."
+    description: >-
+      Tìm kiếm các bài báo khoa học và công trình nghiên cứu học thuật (ví dụ qua arXiv).
+      Dùng khi user yêu cầu tìm bài báo khoa học, preprint, paper nghiên cứu về chủ đề học thuật hoặc công nghệ chuyên sâu.
+      Không dùng cho tin tức thời sự hàng ngày, bài đăng mạng xã hội hay trang web thông thường.
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        max_results: {type: integer, default: 5, description: "Số lượng"}
-        sort_by: {type: string, enum: [relevance, lastUpdatedDate, submittedDate], default: "relevance", description: "Sắp xếp"}
+        query: {type: string, default: "", description: "Từ khóa hoặc chủ đề nghiên cứu học thuật."}
+        max_results: {type: integer, default: 5, description: "Số bài báo tối đa cần trả về."}
+        sort_by: {type: string, enum: [relevance, lastUpdatedDate, submittedDate], default: "relevance", description: "Tiêu chí sắp xếp kết quả."}
       required: [query]
 
   - name: paper_text
-    description: "Lấy nội dung text của một bài báo."
+    description: >-
+      Trích xuất toàn văn hoặc nội dung văn bản của một bài báo khoa học cụ thể theo arXiv ID hoặc URL.
+      Dùng khi đã có định danh hoặc link arXiv của bài báo và cần phân tích sâu nội dung của bài đó.
+      Không dùng để tìm kiếm bài báo mới (dùng papers) hay đọc các trang web thông thường (dùng fetch).
     parameters:
       type: object
       properties:
-        arxiv_url: {type: string, default: "", description: "ID hoặc địa chỉ"}
-        max_pages: {type: integer, default: 5, description: "Số trang"}
-        max_chars: {type: integer, default: 8000, description: "Số ký tự"}
+        arxiv_url: {type: string, default: "", description: "arXiv ID hoặc URL bài báo cụ thể."}
+        max_pages: {type: integer, default: 5, description: "Số trang tối đa cần đọc."}
+        max_chars: {type: integer, default: 8000, description: "Số ký tự tối đa cần trích xuất."}
       required: [arxiv_url]
