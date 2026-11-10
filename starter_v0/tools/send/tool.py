@@ -9,7 +9,10 @@ from tools._shared import TIMEOUT, err
 
 
 def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
-    if not confirmed:
+    # Accept only the literal boolean True. Model-generated values such as the
+    # non-empty string "false" are truthy in Python and must never authorize a
+    # side effect.
+    if confirmed is not True:
         return {
             "tool": "send_telegram",
             "status": "needs_confirmation",

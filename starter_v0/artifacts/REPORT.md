@@ -92,9 +92,11 @@ Only fill if your team did bonus.
 | send (Telegram) |  |  |  |
 | arXiv/company policy |  |  |  |
 | UI |  |  |  |
-| Tool unit tests (`tests/`) | `pytest` output |  |  |
+| Tool unit tests (`tests/`) | `tests/test_tools_todo.py` + `pytest` output | Hoàn thiện các stub ngoại tuyến và giữ regression test cho action guardrail. | Chỉ boolean `confirmed=True` tuyệt đối mới được phép gọi Telegram API. |
 
 Tool unit tests: số test đã viết, số bug tìm được trong tool có sẵn (nếu có), và một ví dụ lỗi mà unit test bắt được nhưng eval không bắt được.
+
+- Bug tìm được: `send_telegram` từng dùng `if not confirmed`, nên input sai kiểu `confirmed="false"` từ model là chuỗi truthy và vẫn gọi Telegram API. Regression test `test_send_string_false_does_not_call_network` đã bắt lỗi mà routing eval không đo được. Guardrail được sửa thành `confirmed is True`; mọi giá trị khác đều trả `needs_confirmation` và không gọi mạng.
 
 ## B6. Reflection
 
