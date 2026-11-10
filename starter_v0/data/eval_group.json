@@ -3,5 +3,27 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_merge_duplicate_sources",
+      "phase": "B",
+      "query": "Bạn đã có các kết quả nghiên cứu sau. Không tìm kiếm hay đọc URL lại. Hãy hợp nhất chúng, loại trùng theo URL, giữ tối đa 3 mục và ưu tiên đa dạng nguồn: [{\"title\": \"AI update bản ngắn\", \"url\": \"https://www.example.com/ai/?utm_source=newsletter\", \"source\": \"example.com\"}, {\"title\": \"AI update đầy đủ\", \"url\": \"https://example.com/ai\", \"source\": \"example.com\", \"summary\": \"Bản mô tả đầy đủ hơn.\"}, {\"title\": \"Góc nhìn cộng đồng\", \"url\": \"https://social.example/post/1\", \"source\": \"social.example\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "merge_sources",
+            "args": {
+              "dedupe_by": "url",
+              "max_items": 3,
+              "prefer_source_diversity": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Routes cleanup of already available duplicate research items to merge_sources without calling lookup, fetch, or format. Item payload is inspected manually in tool_results because the evaluator's subset matcher is not designed to compare lists of objects."
+      }
+    }
+  ]
 }
