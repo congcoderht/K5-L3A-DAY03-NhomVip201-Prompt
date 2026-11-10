@@ -16,51 +16,75 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: >-
+      Hỏi một câu ngắn gọn và chờ lượt trả lời tiếp theo khi thiếu hoặc mơ hồ
+      input bắt buộc. Dùng response_type=text khi cần account, URL hoặc dữ liệu
+      bổ sung. Dùng response_type=yes_no trước hành động gửi, đăng hoặc publish
+      khi chưa có xác nhận rõ ràng. Không dùng khi user đã cung cấp đủ input.
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
-        options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
-      required: [question]
+        question: {type: string, default: "", description: "Một câu hỏi ngắn gọn, chỉ hỏi thông tin còn thiếu hoặc xác nhận cần thiết."}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "text cho thông tin còn thiếu; yes_no cho xác nhận hành động; choice khi cần chọn từ options."}
+        options: {type: array, default: [], items: {type: string}, description: "Chỉ điền khi response_type=choice; nếu không dùng thì để rỗng."}
+      required: [question, response_type]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: >-
+      Lấy bài đăng gần đây từ một tài khoản cụ thể. Dùng khi user xác định một
+      người hoặc account cụ thể, kể cả khi họ dùng tên người thay vì handle.
+      Chuyển tên quen thuộc sang canonical handle khi không mơ hồ: Sam Altman
+      -> sama, Elon Musk -> elonmusk, Andrej Karpathy -> karpathy. Chỉ gọi
+      clarify khi user không xác định người/account nào hoặc danh tính thực sự
+      mơ hồ. Không dùng để tìm bài theo keyword hoặc topic.
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        screenname: {type: string, default: "", description: "Canonical account handle không có ký tự @. Ví dụ: Sam Altman -> sama; Elon Musk -> elonmusk; Andrej Karpathy -> karpathy."}
+        limit: {type: integer, default: 5, description: "Số bài gần đây user yêu cầu; giữ nguyên con số được nêu trong request."}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: >-
+      Tìm bài đăng mạng xã hội theo keyword hoặc topic từ nhiều tài khoản. Dùng
+      khi request hiện tại yêu cầu Twitter/X, social posts, thảo luận cộng đồng
+      hoặc xu hướng mạng xã hội. Không dùng cho web search hoặc tin tức web.
+      Nếu user nói bỏ Twitter/social và chuyển sang web, không gọi tool này;
+      yêu cầu mới nhất ghi đè yêu cầu social trước đó.
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        query: {type: string, default: "", description: "Giữ nguyên chủ đề tìm kiếm của user; không tự thêm từ hoặc đổi nghĩa."}
+        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Top khi user yêu cầu phổ biến/top; Latest khi yêu cầu mới nhất/gần đây."}
+        limit: {type: integer, default: 5, description: "Số bài user yêu cầu; giữ nguyên con số được nêu trong request."}
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: >-
+      Tìm kiếm trên web công khai. Dùng cho web search, internet search, tin tức
+      hoặc khi user chuyển từ Twitter/social sang web. Tin tức dùng topic=news;
+      thông tin web không phải tin dùng topic=general. Yêu cầu mới nhất ghi đè
+      nguồn tìm kiếm cũ: nếu user nói bỏ Twitter và chuyển sang web thì chỉ gọi
+      lookup, không gọi social_search. Không dùng để đọc một URL cụ thể.
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
-        max_results: {type: integer, default: 5, description: "Số kết quả"}
+        query: {type: string, default: "", description: "Giữ nguyên chủ đề cốt lõi của user; không tự thêm từ news vào query."}
+        topic: {type: string, enum: [general, news], default: "general", description: "news cho yêu cầu tin tức; general cho thông tin web không phải tin."}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "day cho hôm nay/24 giờ; week cho tuần này; month cho tháng này; year cho năm nay. Giữ constraint thời gian từ lượt trước nếu lượt mới không hủy hoặc thay đổi nó."}
+        max_results: {type: integer, default: 5, description: "Số kết quả user yêu cầu; giữ nguyên con số được nêu trong request."}
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: >-
+      Đọc nội dung của một URL cụ thể do user cung cấp. Chỉ dùng khi request
+      hiện tại hoặc context hội thoại chứa URL rõ ràng. Nếu user nói bài này
+      nhưng không có URL, gọi clarify(response_type=text). Không tự tạo hoặc
+      đoán URL. Không dùng để tìm kiếm web.
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "URL http/https cụ thể do user cung cấp trong request hoặc context hội thoại."}
       required: [url]
 
   - name: format
@@ -120,12 +144,16 @@ tools:
 
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi một đoạn văn bản đi."
+    description: >-
+      Gửi chính xác nội dung đã được user xác nhận lên Telegram. Đây là
+      side-effect tool. Chỉ gọi với confirmed=true sau khi user đã xác nhận rõ
+      nội dung trong hội thoại hiện tại. Nếu chưa xác nhận, gọi
+      clarify(response_type=yes_no), không gọi send.
     parameters:
       type: object
       properties:
-        text: {type: string, default: "", description: "Nội dung"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        text: {type: string, default: "", description: "Chính xác nội dung user đã xem và xác nhận để gửi."}
+        confirmed: {type: boolean, default: false, description: "Chỉ true khi user đã xác nhận rõ nội dung cần gửi trong hội thoại hiện tại."}
       required: [text]
 
   - name: policy
