@@ -104,19 +104,85 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
     pytest.skip(TODO)
 
 
-# ---------------- YOUR NEW TOOL(S) ----------------
+# ---------------- merge_sources ----------------
 # Write at least 3 tests per tool your team adds:
 #   1. happy path (mocked if it calls an API)
 #   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+merge_sources_tool = TOOL_FUNCTIONS["merge_sources"]
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+def test_merge_sources_deduplicates_tracking_url_variants() -> None:
+    result = merge_sources_tool(items=[
+        {"title": "Short", "url": "https://www.example.com/news/?utm_source=x"},
+        {
+            "title": "Detailed story",
+            "url": "https://example.com/news",
+            "source": "example.com",
+            "summary": "A more complete summary.",
+        },
+    ])
+
+    assert result["original_count"] == 2
+    assert result["duplicates_removed"] == 1
+    assert result["returned_count"] == 1
+    assert result["items"][0]["url"] == "https://example.com/news"
+    assert result["items"][0]["summary"] == "A more complete summary."
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_merge_sources_non_list_input_returns_error_dict() -> None:
+    result = merge_sources_tool(items="not-a-list")
+
+    assert result["error"] == "TypeError"
+    assert "items must be a list" in result["message"]
+
+
+@pytest.mark.parametrize("kwargs, error_type", [
+    ({"dedupe_by": "semantic"}, "ValueError"),
+    ({"max_items": 0}, "ValueError"),
+    ({"max_items": "5"}, "TypeError"),
+    ({"prefer_source_diversity": "true"}, "TypeError"),
+])
+def test_merge_sources_invalid_options_return_error_dict(kwargs, error_type) -> None:
+    result = merge_sources_tool(items=[], **kwargs)
+
+    assert result["error"] == error_type
+
+
+def test_merge_sources_round_robins_sources_before_limit() -> None:
+    result = merge_sources_tool(
+        items=[
+            {"title": "A1", "url": "https://a.example/1", "source": "A"},
+            {"title": "A2", "url": "https://a.example/2", "source": "A"},
+            {"title": "A3", "url": "https://a.example/3", "source": "A"},
+            {"title": "B1", "url": "https://b.example/1", "source": "B"},
+            {"title": "B2", "url": "https://b.example/2", "source": "B"},
+        ],
+        max_items=4,
+        prefer_source_diversity=True,
+    )
+
+    assert [item["title"] for item in result["items"]] == ["A1", "B1", "A2", "B2"]
+    assert result["source_count"] == 2
+
+
+def test_merge_sources_skips_items_without_url_or_title() -> None:
+    result = merge_sources_tool(items=[
+        {"summary": "No identity"},
+        "not-an-object",
+        {"title": "Usable", "url": "https://example.com/usable"},
+    ])
+
+    assert result["invalid_items_skipped"] == 2
+    assert result["returned_count"] == 1
+    assert result["items"][0]["title"] == "Usable"
+
+
+def test_merge_sources_empty_items_returns_empty_success() -> None:
+    result = merge_sources_tool(items=[])
+
+    assert "error" not in result
+    assert result["original_count"] == 0
+    assert result["returned_count"] == 0
+    assert result["items"] == []

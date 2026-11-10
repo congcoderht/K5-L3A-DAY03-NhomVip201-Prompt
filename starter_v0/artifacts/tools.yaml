@@ -84,6 +84,40 @@ tools:
         headline: {type: string, default: "", description: "Tiêu đề"}
       required: [items, template]
 
+  - name: merge_sources
+    description: "Hợp nhất, chuẩn hóa và loại kết quả trùng từ các research tool sau khi dữ liệu đã được lấy. Dùng trước format khi có nhiều nguồn hoặc URL trùng; không dùng để tìm kiếm, đọc URL, fact-check, tóm tắt hoặc trình bày digest."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          description: "Các result item đã có từ một hoặc nhiều research tool. Mỗi item cần có URL hoặc title để nhận diện."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              summary: {type: string}
+              date: {type: string}
+              section: {type: string}
+        dedupe_by:
+          type: string
+          enum: [auto, url, title]
+          default: auto
+          description: "Cách nhận diện item trùng: auto ưu tiên URL rồi fallback title; url chỉ dùng URL; title chỉ dùng title."
+        max_items:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          description: "Số item tối đa cần trả về, từ 1 đến 50."
+        prefer_source_diversity:
+          type: boolean
+          default: true
+          description: "True để xen kẽ nhiều nguồn trước khi áp dụng max_items; false để giữ thứ tự đầu vào sau dedupe."
+      required: [items]
+
   # ---------------- Bonus tools ----------------
   - name: send
     description: "Gửi một đoạn văn bản đi."
