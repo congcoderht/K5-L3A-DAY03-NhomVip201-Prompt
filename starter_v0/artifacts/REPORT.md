@@ -5,7 +5,7 @@
 - Team: **NhomVip201**
 - Members: **Dobit25**
 - Provider/model: **OpenRouter — `openai/gpt-4o-mini`**
-- Final accepted artifact: **`v4+p7dc4cb261b78+t823090505338`**
+- Final accepted artifact: **`v4-tools+p7dc4cb261b78+t6edf66e24b4a`**
 
 ---
 
@@ -17,7 +17,7 @@ Research Agent hỗ trợ tìm kiếm tin tức và nội dung mạng xã hội,
 
 **Link dùng thử (Cloudflare Quick Tunnel):**
 
-> https://broker-scheduled-inventory-fundamentals.trycloudflare.com
+> https://bracelet-pages-apollo-coordinate.trycloudflare.com
 
 URL đã được kiểm tra ngày 10/11/2026: trang gốc trả HTTP 200 và `/_stcore/health` trả `200 ok`. Đây là quick tunnel tạm thời, chỉ hoạt động khi tiến trình Streamlit và Cloudflare Tunnel của nhóm còn chạy.
 
@@ -60,8 +60,9 @@ Metric trong bảng là `case_accuracy` của base suite. Mỗi phiên bản đ�
 | v2 | `system_prompt.md` | Routing rule chi tiết cho từng tool sẽ tăng routing và argument accuracy. | 0.85 | 0.70 | `runs/v2_B_base_openrouter_20261110T115320326647.json` |
 | v3 | `tools.yaml` | Contract loại trừ lẫn nhau và `clarify.response_type` bắt buộc sẽ giảm nhầm tool/argument. | 0.70 | 0.90 | `runs/v3_B_base_openrouter_20261110T120703099406.json` |
 | v4 | `system_prompt.md` | Latest correction, constraint carry-over và source switching rõ ràng sẽ cải thiện multi-turn. | 0.90 | **0.95** | `runs/v4_B_base_openrouter_20261110T124457932043.json` |
+| v4-tools | `tools.yaml` | Description chi tiết hơn cho format, merge, policy và paper tools sẽ giữ routing hiện tại đồng thời giảm ranh giới mơ hồ. | 0.95 | **0.95** | `runs/v4-tools_B_base_openrouter_20261110T192957943326.json` |
 
-V2 là một regression được giữ lại làm bằng chứng: prompt dài và chi tiết hơn không tự động làm routing tốt hơn. Sau khi đọc log, nhóm chuyển phần contract phù hợp sang tool declaration ở v3, giúp base accuracy tăng từ 0.70 lên 0.90. V4 chỉ bổ sung các quy tắc quản lý trạng thái hội thoại và đạt 19/20 base cases, routing accuracy 1.00, argument accuracy 0.95 và multi-turn accuracy 1.00.
+V2 là một regression được giữ lại làm bằng chứng: prompt dài và chi tiết hơn không tự động làm routing tốt hơn. Sau khi đọc log, nhóm chuyển phần contract phù hợp sang tool declaration ở v3, giúp base accuracy tăng từ 0.70 lên 0.90. V4 chỉ bổ sung các quy tắc quản lý trạng thái hội thoại và đạt 19/20 base cases, routing accuracy 1.00, argument accuracy 0.95 và multi-turn accuracy 1.00. Bản `v4-tools` giữ nguyên system prompt v4, làm rõ thêm contract của nhóm research/format tools và giữ nguyên toàn bộ base metrics, không có provider error.
 
 ## B2. Failure Analysis
 
@@ -79,7 +80,7 @@ Hai lỗi còn lại của v4 được giữ nguyên trong evidence, không sử
 
 Dataset `data/eval_group.json` có đúng **10 cases: 5 single-turn và 5 multi-turn**. Tool mới được kiểm tra trực tiếp bởi `G01`.
 
-| Case ID | Loại | What It Tests | Expected Tool/Behavior | v4 Result |
+| Case ID | Loại | What It Tests | Expected Tool/Behavior | v4-tools Result |
 |---|---|---|---|---|
 | `G01_merge_duplicate_sources` | Single | Route đến tool mới để hợp nhất nguồn trùng. | `merge_sources` | PASS |
 | `G02_named_account_timeline` | Single | Chuyển tên người quen thuộc thành canonical handle. | `timeline(screenname="sama", limit=4)` | PASS |
@@ -92,7 +93,7 @@ Dataset `data/eval_group.json` có đúng **10 cases: 5 single-turn và 5 multi-
 | `G09_correct_handle_and_limit` | Multi | Áp dụng handle và limit correction mới nhất. | `timeline(screenname="sama", limit=3)` | PASS |
 | `G10_keep_social_change_topic_and_sort` | Multi | Giữ nguồn social, đổi topic và sort. | `social_search(query="Anthropic", search_type="Top")` | PASS |
 
-Kết quả group v4 (`runs/v4_B_group_openrouter_20261110T124556018453.json`):
+Kết quả group v4-tools (`runs/v4-tools_B_group_openrouter_20261110T193048164467.json`):
 
 - Case accuracy: **0.90** (9/10)
 - Tool routing accuracy: **0.90**
@@ -102,13 +103,13 @@ Kết quả group v4 (`runs/v4_B_group_openrouter_20261110T124556018453.json`):
 
 ## B4. Live Chat Evidence
 
-Evidence: `transcripts/v4_openrouter_20261110T160349481008.transcript.json`
+Evidence: `transcripts/v4-tools_openrouter_20261110T193123151676.transcript.json`
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---:|---|---|---|---|
-| 1 | Tìm tin tức nổi bật về AI trong tháng này. | `lookup(query="AI", topic="news", timeframe="month")` | `v4+p7dc4cb261b78+t823090505338` | Đúng source, topic và timeframe; trả danh sách tin có URL. |
-| 2 | Đổi chủ đề sang chip bán dẫn nhưng vẫn giữ tháng này. | `lookup(query="chip bán dẫn", topic="news", timeframe="month")` | Cùng artifact v4 | Đổi query nhưng giữ đúng news/month. |
-| 3 | Bỏ web, chuyển sang Twitter về chip bán dẫn. | `social_search(query="chip bán dẫn", search_type="Latest")` | Cùng artifact v4 | Chuyển đúng source và không gọi lại lookup. |
+| 1 | Tìm tin tức nổi bật về AI trong tháng này. | `lookup(query="AI", topic="news", timeframe="month")` | `v4-tools+p7dc4cb261b78+t6edf66e24b4a` | Đúng source, topic và timeframe; trả danh sách tin có URL. |
+| 2 | Đổi chủ đề sang chip bán dẫn nhưng vẫn giữ tháng này. | `lookup(query="chip bán dẫn", topic="news", timeframe="month")` | Cùng artifact v4-tools | Đổi query nhưng giữ đúng news/month. |
+| 3 | Bỏ web, chuyển sang Twitter về chip bán dẫn. | `social_search(query="chip bán dẫn", search_type="Latest")` | Cùng artifact v4-tools | Chuyển đúng source và không gọi lại lookup. |
 
 Transcript có 3 turns, dùng `openai/gpt-4o-mini` qua OpenRouter và không có provider error. Việc hành vi carry-over chạy đúng trong live chat nhưng từng fail ở một group run cho thấy cần kết hợp automatic eval với manual review và nhiều lần chạy để đánh giá độ tái lập.
 
