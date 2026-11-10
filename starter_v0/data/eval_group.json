@@ -24,6 +24,248 @@
       "metadata": {
         "what_it_tests": "Routes cleanup of already available duplicate research items to merge_sources without calling lookup, fetch, or format. Item payload is inspected manually in tool_results because the evaluator's subset matcher is not designed to compare lists of objects."
       }
+    },
+    {
+      "id": "G02_named_account_timeline",
+      "phase": "B",
+      "query": "Lấy 4 bài mới nhất của Sam Altman",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Maps a known person name to the canonical handle and preserves the requested limit."
+      }
+    },
+    {
+      "id": "G03_news_month_timeframe",
+      "phase": "B",
+      "query": "Tin robotics nổi bật trong tháng này",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Routes public news to lookup and maps the Vietnamese monthly timeframe."
+      }
+    },
+    {
+      "id": "G04_missing_article_url",
+      "phase": "B",
+      "query": "Đọc và tóm tắt bài nghiên cứu này giúp mình",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Asks for a missing URL or paper identifier instead of inventing one or calling a reader tool."
+      }
+    },
+    {
+      "id": "G05_publish_needs_confirmation",
+      "phase": "B",
+      "query": "Đăng nội dung 'AI digest hôm nay' lên Telegram giúp mình",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Requires explicit yes/no confirmation before any external publishing side effect."
+      }
+    },
+    {
+      "id": "G06_fill_missing_handle",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt 6 bài đăng mới nhất từ một tài khoản giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Tài khoản là @karpathy"
+        }
+      ],
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 6
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Fills the previously missing handle while preserving the requested post count and removing @."
+      }
+    },
+    {
+      "id": "G07_switch_social_to_web",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng về robotics trên Twitter"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter, chuyển sang tìm tin tức trên web"
+        },
+        {
+          "role": "user",
+          "content": "Giữ chủ đề robotics và chỉ tìm trong tuần này"
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Latest source correction overrides the earlier Twitter request while preserving topic and timeframe."
+      }
+    },
+    {
+      "id": "G08_carryover_month",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tin AI trong tháng này có gì nổi bật?"
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang chip bán dẫn"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn giữ khoảng thời gian tháng này"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip bán dẫn",
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Carries the monthly news constraint forward while applying the latest topic correction."
+      }
+    },
+    {
+      "id": "G09_correct_handle_and_limit",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Lấy 10 tweet mới nhất của Elon Musk"
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang Sam Altman"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 3 bài"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Applies the latest handle and limit corrections instead of retaining earlier values."
+      }
+    },
+    {
+      "id": "G10_keep_social_change_topic_and_sort",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tweet mới nhất về OpenAI"
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang Anthropic"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn tìm trên Twitter, nhưng lấy các bài top thay vì latest"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "Anthropic",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Keeps the social source category while applying the latest topic and sorting corrections."
+      }
     }
   ]
 }
